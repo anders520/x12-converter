@@ -1,0 +1,80 @@
+// package main
+
+// import (
+// 	"bufio"
+// 	"encoding/json"
+// 	"fmt"
+// 	"os"
+// 	"strings"
+// )
+
+// // X12Document represents the JSON structure we want to output
+// type X12Document struct {
+// 	Segments []Segment `json:"segments"`
+// }
+
+// type Segment struct {
+// 	ID       string   `json:"id"`
+// 	Elements []string `json:"elements"`
+// }
+
+// func main() {
+// 	// 1. Open the file
+// 	file, err := os.Open("sample1.txt") // Make sure your file is named sample.txt
+// 	if err != nil {
+// 		fmt.Printf("Error opening file: %v\n", err)
+// 		return
+// 	}
+// 	defer file.Close()
+
+// 	// 2. Read the raw content
+// 	var rawData strings.Builder
+// 	scanner := bufio.NewScanner(file)
+// 	for scanner.Scan() {
+// 		rawData.WriteString(scanner.Text())
+// 	}
+
+// 	// 3. Detect Delimiters (Standard X12: * for element, ~ for segment)
+// 	// In a real production app, you'd parse the ISA segment to find these dynamically.
+// 	// For this MVP, we assume standard delimiters.
+// 	content := rawData.String()
+// 	segmentTerminator := "~"
+// 	elementSeparator := "*"
+
+// 	// 4. Parse Segments
+// 	rawSegments := strings.Split(content, segmentTerminator)
+// 	doc := X12Document{}
+
+// 	for _, rawSeg := range rawSegments {
+// 		cleanSeg := strings.TrimSpace(rawSeg)
+// 		if cleanSeg == "" {
+// 			continue
+// 		}
+
+// 		// Split segment into elements
+// 		elements := strings.Split(cleanSeg, elementSeparator)
+
+// 		// The first part is the Segment ID (e.g., ST, BEG, N1)
+// 		segmentID := elements[0]
+
+// 		// The rest are the data elements
+// 		dataElements := []string{}
+// 		if len(elements) > 1 {
+// 			dataElements = elements[1:]
+// 		}
+
+// 		doc.Segments = append(doc.Segments, Segment{
+// 			ID:       segmentID,
+// 			Elements: dataElements,
+// 		})
+// 	}
+
+// 	// 5. Output JSON
+// 	jsonOutput, err := json.MarshalIndent(doc, "", "  ")
+// 	if err != nil {
+// 		fmt.Println("Error generating JSON:", err)
+// 		return
+// 	}
+
+// 	fmt.Println(string(jsonOutput))
+// }
