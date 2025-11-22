@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -85,11 +86,19 @@ func main() {
 	// 3. Start the Server
 	http.HandleFunc("/convert", x12Handler)
 
-	port := ":8080"
-	fmt.Printf("🚀 X12 API Server running on http://localhost%s\n", port)
+	// GET THE PORT FROM THE CLOUD (Render/Railway/Heroku)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default for localhost
+	}
+
+	// Important: We must listen on "0.0.0.0" (All interfaces) for Docker/Cloud apps
+	addr := "0.0.0.0:" + port
+
+	fmt.Printf("🚀 X12 API Server running on %s\n", addr)
 	fmt.Println("   Waiting for POST requests...")
 
-	if err := http.ListenAndServe(port, nil); err != nil {
+	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal(err)
 	}
 }
